@@ -2,7 +2,7 @@
 \alias{Diff_GridOperator}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Difference operator for a grid
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~

@@ -2,7 +2,7 @@
 \alias{posflux}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Calculate flux outward from triangle
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~

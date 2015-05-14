@@ -2,7 +2,7 @@
 \alias{approx_equals}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+checks if two numbers are close to equal
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~

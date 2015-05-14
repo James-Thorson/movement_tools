@@ -2,7 +2,7 @@
 \alias{Loc2Tri_Fn}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Assign locations to a triangulated domain
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
