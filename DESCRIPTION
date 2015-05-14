@@ -1,6 +1,6 @@
-Package: movement_tools
+Package: MovementTools
 Type: Package
-Title: What the package does (short line)
+Title: Tools for movement operators in GMRF models
 Version: 1.0
 Date: 2015-05-14
 Author: Who wrote it
