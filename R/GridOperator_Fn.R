@@ -18,7 +18,7 @@ function( grid_dataframe ){
   gradx_lwr = gradx_upr = gradx
   gradx_lwr[upper.tri(gradx,diag=TRUE)] = 0
   gradx_upr[lower.tri(gradx,diag=TRUE)] = 0
-  #diag(gradx_upr) = -colSums(gradx_upr)
+  diag(gradx_upr) = -colSums( as.matrix(gradx_upr) )
   #diag(gradx_lwr) = -colSums(gradx_lwr)
   
   ## grady -- left and right -- zero flux across boundary
