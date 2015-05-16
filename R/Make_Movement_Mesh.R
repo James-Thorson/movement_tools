@@ -1,5 +1,5 @@
 
-Make_Movement_Mesh <- function( loc_orig, ... ){
+Make_Movement_Mesh <- function( loc_orig, MeshType="MeshType", ... ){
   # 1st mesh
     # for determining locations to track as vertices, and then discarded
   mesh_discard = inla.mesh.create( loc_orig, plot.delay=NULL, extend=list(n=8,offset=-0.15), refine=FALSE, ... )  # loc_samp
