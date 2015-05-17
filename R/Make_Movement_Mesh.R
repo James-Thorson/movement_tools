@@ -23,7 +23,7 @@ Make_Movement_Mesh <- function( loc_orig, MeshType="Samples", ... ){
   n_g = mesh_gmrf$n
 
   # Return list
-  Return = list("n_g"=n_g, "spde_gmrf"=spde_gmrf, "n_v"=n_v, "loc_v"=loc_v, "n_r"=n_r, "mesh_domain"=mesh_domain)
+  Return = list("n_g"=n_g, "spde_gmrf"=spde_gmrf, "n_v"=n_v, "loc_v"=loc_v, "loc_r"=loc_r, "n_r"=n_r, "mesh_domain"=mesh_domain)
   return( Return )
 }
 
