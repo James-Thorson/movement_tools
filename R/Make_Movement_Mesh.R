@@ -14,6 +14,7 @@ Make_Movement_Mesh <- function( loc_orig, MeshType="Samples", ... ){
   # Number of triangles (r) and vertices (v)
   n_v = nrow( loc_v )
   n_r = nrow( loc_r )
+  colnames(loc_v) = colnames(loc_r) = colnames(loc_orig)
 
   # 3rd mesh
     # for SPDE approximation to RF based on center of triangles for movement
@@ -23,7 +24,7 @@ Make_Movement_Mesh <- function( loc_orig, MeshType="Samples", ... ){
   n_g = mesh_gmrf$n
 
   # Return list
-  Return = list("n_g"=n_g, "spde_gmrf"=spde_gmrf, "n_v"=n_v, "loc_v"=loc_v, "loc_r"=loc_r, "n_r"=n_r, "mesh_domain"=mesh_domain)
+  Return = list("n_g"=n_g, "n_v"=n_v, "n_r"=n_r, "loc_v"=loc_v, "loc_r"=loc_r, "mesh_domain"=mesh_domain, "spde_gmrf"=spde_gmrf, "mesh_gmrf"=mesh_gmrf)
   return( Return )
 }
 
