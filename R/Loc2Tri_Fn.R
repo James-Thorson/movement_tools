@@ -33,7 +33,7 @@ function( locmat, TriList, RemoveMissing=FALSE, Verbose=TRUE ){
   # Search
   r_loc = rep(NA, nrow(locmat))
   for(li in 1:nrow(locmat)){
-    Tri2Check = which( sapply(1:n_r, FUN=function(ri){Within_Fn(loc=locmat[li,],locmat=rbind(V0[ri,],V1[ri,],V2[ri,]))}) ) 
+    Tri2Check = which( sapply(1:n_r, FUN=function(ri){Within_Fn(loc=locmat[li,],polygonloc=rbind(V0[ri,],V1[ri,],V2[ri,]))}) ) 
     Which = NULL
     for( ri in Tri2Check){
       v1 = rbind( E0[ri,], E1[ri,], E2[ri,] )

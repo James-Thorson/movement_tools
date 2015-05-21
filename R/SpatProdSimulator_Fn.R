@@ -48,7 +48,7 @@ SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1,
   #cpue_mean_i = sizepar[1] * DF[,'c_i']
   #cpue_CV_i = sizepar[2]/sizepar[1] * DF[,'c_i']^(-0.5)
   #DF = cbind( DF, "cpue_i"=rgamma(nrow(DF), shape=cpue_CV_i^(-2), scale=cpue_mean_i*cpue_CV_i^2) )      # ~ gamma( shape= CV^(-2), scale=mean*CV^2 )
-  DF = cbind( DF, "cpue_i"=ifelse(DF[,'c_i']>0,1,0) * rlnorm(nrow(DF), meanlog=log(DF[,'cexp_i'])-1^2/2, sdlog=1) )
+  DF = cbind( DF, "cpue_i"=ifelse(DF[,'c_i']>0,1,0) * rlnorm(nrow(DF), meanlog=log(DF[,'cexp_i']), sdlog=1) )
 
   # Total catches
   catch_t = colSums( catch_rt )
