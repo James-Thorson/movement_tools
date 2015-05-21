@@ -1,6 +1,6 @@
 
 #  MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1, effort_par=c(0.2,0.5), sizepar=c(1,0.5), Scale, Dynamical_Model, n_s, n_t, r_s, n_r, loc_r, alpha, beta, km2_r 
-SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1, effort_par=c(0.2,0.5), sizepar=c(1,0.5), Scale, Dynamical_Model, n_s, n_t, r_s, n_r, loc_r, alpha, beta, km2_r ){
+SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1, effort_par=c(0.2,0.5), sizepar=c(1,0.5), Scale, Dynamical_Model, n_s, n_t, r_s, n_r, loc_r, logmeanu0, alpha, beta, km2_r ){
   # Load library
   require( RandomFields )
 
@@ -22,19 +22,19 @@ SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1,
   for(t in 1:n_t){
     Epsilon_rt[,t] = RFsimulate(model=RF_epsilon, x=loc_r[,1], y=loc_r[,2])@data[,1]
     if(t==1){
-      u_rt[,t] = km2_r * exp( alpha + Epsilon_rt[,t] + Omega_r )
+      u_rt[,t] = km2_r * exp( logmeanu0 + Omega_r + Epsilon_rt[,t] )
       catch_rt[,t] = (1 - exp(-effortdens_rt[,t]) ) * u_rt[,t]
       u_rt[,t] = exp(-effortdens_rt[,t]) * u_rt[,t] 
     }
     if(t>=2){
       # Fishing effort
       catch_rt[,t] = (1 - exp(-effortdens_rt[,t]) ) * u_rt[,t-1]
-      u_rt[,t] = exp(-effortdens_rt[,t]) * u_rt[,t-1] 
+      upred_rt[,t] = exp(-effortdens_rt[,t]) * u_rt[,t-1] 
       # Movement
-      upred_rt[,t] = as.vector( MoveMat %*% u_rt[,t] )
+      upred_rt[,t] = as.vector( MoveMat %*% upred_rt[,t] )
       # Production
-      if( Dynamical_Model=="Gompertz" ) u_rt[,t] = upred_rt[,t] * km2_r * exp(alpha - beta*log(upred_rt[,t]) + Omega_r + Epsilon_rt[,t])
-      if( Dynamical_Model=="Ricker" ) u_rt[,t] = upred_rt[,t] * km2_r * exp(alpha - beta*log(upred_rt[,t]) + Omega_r + Epsilon_rt[,t])
+      if( Dynamical_Model=="Gompertz" ) u_rt[,t] = upred_rt[,t] * exp(alpha + Omega_r - beta*log(upred_rt[,t]/km2_r) + Epsilon_rt[,t])
+      if( Dynamical_Model=="Ricker" ) u_rt[,t] = upred_rt[,t] * exp(alpha + Omega_r - beta*(upred_rt[,t]/km2_r) + Epsilon_rt[,t])
     }
   }
 
