@@ -55,7 +55,7 @@ SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1,
   catch_t = colSums( catch_rt )
 
   # Return stuff
-  Return = list("DF"=DF, "catch_t"=catch_t, "effortdens_rt"=effortdens_rt, "MoveMat"=MoveMat, "upred_rt"=upred_rt, "u_rt"=u_rt, "Epsilon_rt"=Epsilon_rt, "Omega_r"=Omega_r)
+  Return = list("DF"=DF, "catch_t"=catch_t, "catch_rt"=catch_rt, "effortdens_rt"=effortdens_rt, "MoveMat"=MoveMat, "upred_rt"=upred_rt, "u_rt"=u_rt, "Epsilon_rt"=Epsilon_rt, "Omega_r"=Omega_r)
   return( Return )
 }
 
