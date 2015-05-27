@@ -9,14 +9,14 @@ SpatProdSimulator_Fn = function( SettingsList ){
   require( RandomFields )
 
   # Simulate
-  RF_omega = RMgauss(var=SD_omega^2, scale=Scale)
-  RF_epsilon = RMgauss(var=SD_epsilon^2, scale=Scale)
-  RF_effort = RMgauss(var=SD_effort^2, scale=Scale)
+  RF_omega = RMgauss(var=SettingsList$SD_omega^2, scale=SettingsList$Scale)
+  RF_epsilon = RMgauss(var=SettingsList$SD_epsilon^2, scale=SettingsList$Scale)
+  RF_effort = RMgauss(var=SettingsList$SD_effort^2, scale=SettingsList$Scale)
 
   # Simulate effort
-  effortdens_t = rlnorm( n_t, meanlog=log(effort_par[1])-effort_par[2]^2/2, sdlog=effort_par[2] )
-  effortdens_r = exp( RFsimulate(model=RF_effort, x=loc_r[,1], y=loc_r[,2])@data[,1] - SD_effort^2/2 )
-  effortdens_rt = outer(effortdens_r, rep(1,n_t)) * outer(rep(1,n_r), effortdens_t)
+  effortdens_t = rlnorm( SettingsList$n_t, meanlog=log(SettingsList$effort_par[1])-SettingsList$effort_par[2]^2/2, sdlog=SettingsList$effort_par[2] )
+  effortdens_r = exp( RFsimulate(model=RF_effort, x=loc_r[,1], y=loc_r[,2])@data[,1] - SettingsList$SD_effort^2/2 )
+  effortdens_rt = outer(effortdens_r, rep(1,SettingsList$n_t)) * outer(rep(1,n_r), effortdens_t)
   
   # Simulate density for each triangle
   # Gompertz: u(t+1) = u(t) * exp( alpha - beta*log(u(t)) )
@@ -26,7 +26,7 @@ SpatProdSimulator_Fn = function( SettingsList ){
   for(t in 1:n_t){
     Epsilon_rt[,t] = RFsimulate(model=RF_epsilon, x=loc_r[,1], y=loc_r[,2])@data[,1]
     if(t==1){
-      u_rt[,t] = km2_r * exp( logmeanu0 + Omega_r + Epsilon_rt[,t] )
+      u_rt[,t] = SettingsList$km2_r * exp( SettingsList$logmeanu0 + Omega_r + Epsilon_rt[,t] )
       catch_rt[,t] = (1 - exp(-effortdens_rt[,t]) ) * u_rt[,t]
       u_rt[,t] = exp(-effortdens_rt[,t]) * u_rt[,t] 
     }
@@ -35,18 +35,18 @@ SpatProdSimulator_Fn = function( SettingsList ){
       catch_rt[,t] = (1 - exp(-effortdens_rt[,t]) ) * u_rt[,t-1]
       upred_rt[,t] = exp(-effortdens_rt[,t]) * u_rt[,t-1] 
       # Movement
-      upred_rt[,t] = as.vector( MoveMat %*% upred_rt[,t] )
+      upred_rt[,t] = as.vector( SettingsList$MoveMat %*% upred_rt[,t] )
       # Production
-      if( Dynamical_Model=="Gompertz" ) u_rt[,t] = upred_rt[,t] * exp(alpha + Omega_r - beta*log(upred_rt[,t]/km2_r) + Epsilon_rt[,t])
-      if( Dynamical_Model=="Ricker" ) u_rt[,t] = upred_rt[,t] * exp(alpha + Omega_r - beta*(upred_rt[,t]/km2_r) + Epsilon_rt[,t])
+      if( Dynamical_Model=="Gompertz" ) u_rt[,t] = upred_rt[,t] * exp(SettingsList$alpha + Omega_r - SettingsList$beta*log(upred_rt[,t]/SettingsList$km2_r) + Epsilon_rt[,t])
+      if( Dynamical_Model=="Ricker" ) u_rt[,t] = upred_rt[,t] * exp(SettingsList$alpha + Omega_r - SettingsList$beta*(upred_rt[,t]/SettingsList$km2_r) + Epsilon_rt[,t])
     }
   }
 
   # Simulate samples for each site and year
-  DF = expand.grid("s_i"=1:n_s, "t_i"=1:n_t)
+  DF = expand.grid("s_i"=1:SettingsList$n_s, "t_i"=1:SettingsList$n_t)
   DF = cbind( DF, "r_i"=r_s[DF[,'s_i']], "km2_i"=1 )
-  DF = cbind( DF, "cexp_i"=u_rt[ as.matrix(DF[,c('r_i','t_i')]) ] / km2_r[DF[,'r_i']] * DF[,'km2_i'] )
-  DF = cbind( DF, "c_i"=rpois(n_s*n_t, lambda=DF[,'cexp_i']) )
+  DF = cbind( DF, "cexp_i"=u_rt[ as.matrix(DF[,c('r_i','t_i')]) ] / SettingsList$km2_r[DF[,'r_i']] * DF[,'km2_i'] )
+  DF = cbind( DF, "c_i"=rpois(SettingsList$n_s*SettingsList$n_t, lambda=DF[,'cexp_i']) )
   #DF = cbind( DF, "cpue_i"=NA)
   #for(i in 1:nrow(DF)) DF[i,'cpue_i'] = sum(rlnorm(DF[,'c_i'], meanlog=log(sizepar[1])-sizepar[2]^2/2, sdlog=sizepar[2]))
   #cpue_mean_i = sizepar[1] * DF[,'c_i']
