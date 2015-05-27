@@ -1,10 +1,6 @@
 
 #  MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1, effort_par=c(0.2,0.5), sizepar=c(1,0.5), Scale, Dynamical_Model, n_s, n_t, r_s, n_r, loc_r, alpha, beta, km2_r 
-SpatProdSimulator_Fn = function( SettingsList ){
-  # Attach settings
-  attach( SettingsList )
-  on.exit( detach(SettingsList) )
-  
+SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1, effort_par=c(0.2,0.5), sizepar=c(1,0.5), Scale, Dynamical_Model, n_s, n_t, r_s, n_r, loc_r, logmeanu0, alpha, beta, km2_r ){
   # Load library
   require( RandomFields )
 
@@ -59,7 +55,7 @@ SpatProdSimulator_Fn = function( SettingsList ){
   catch_t = colSums( catch_rt )
 
   # Return stuff
-  Return = list("SettingsList"=SettingsList, "DF"=DF, "catch_t"=catch_t, "catch_rt"=catch_rt, "effortdens_rt"=effortdens_rt, "MoveMat"=MoveMat, "upred_rt"=upred_rt, "u_rt"=u_rt, "Epsilon_rt"=Epsilon_rt, "Omega_r"=Omega_r)
+  Return = list("DF"=DF, "catch_t"=catch_t, "catch_rt"=catch_rt, "effortdens_rt"=effortdens_rt, "MoveMat"=MoveMat, "upred_rt"=upred_rt, "u_rt"=u_rt, "Epsilon_rt"=Epsilon_rt, "Omega_r"=Omega_r)
   return( Return )
 }
 
