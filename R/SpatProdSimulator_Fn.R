@@ -1,6 +1,6 @@
 
 #  MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1, effort_par=c(0.2,0.5), sizepar=c(1,0.5), Scale, Dynamical_Model, n_s, n_t, r_s, n_r, loc_r, alpha, beta, km2_r 
-SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1, effort_par=c(0.2,0.5), sizepar=c(1,0.5), Scale, Dynamical_Model, n_s, n_t, r_s, n_r, loc_r, logmeanu0, alpha, beta, km2_r ){
+SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1, CV_obs=1, effort_par=c(0.2,0.5), sizepar=c(1,0.5), Scale, Dynamical_Model, n_s, n_t, r_s, n_r, loc_r, logmeanu0, alpha, beta, km2_r ){
   # Load library
   require( RandomFields )
 
@@ -35,8 +35,6 @@ SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1,
       # Production
       if( Dynamical_Model=="Gompertz" ) u_rt[,t] = upred_rt[,t] * exp(alpha + Omega_r - beta*log(upred_rt[,t]/km2_r) + Epsilon_rt[,t])
       if( Dynamical_Model=="Ricker" ) u_rt[,t] = upred_rt[,t] * exp(alpha + Omega_r - beta*(upred_rt[,t]/km2_r) + Epsilon_rt[,t])
-      #if( Dynamical_Model=="Gompertz" ) u_rt[,t] = km2_r * (upred_rt[,t]/km2_r) * exp(alpha + Omega_r - beta*log(upred_rt[,t]/km2_r) + Epsilon_rt[,t]) )
-      #if( Dynamical_Model=="Ricker" ) u_rt[,t] = km2_r * (upred_rt[,t]/km2_r) * exp(alpha + Omega_r - beta*(upred_rt[,t]/km2_r) + Epsilon_rt[,t]) )
     }
   }
 
@@ -45,20 +43,16 @@ SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1,
   DF = cbind( DF, "r_i"=r_s[DF[,'s_i']], "km2_i"=1 )
   DF = cbind( DF, "cexp_i"=u_rt[ as.matrix(DF[,c('r_i','t_i')]) ] * DF[,'km2_i']/km2_r[DF[,'r_i']] )
   DF = cbind( DF, "c_i"=rpois(n_s*n_t, lambda=DF[,'cexp_i']) )
-  #DF = cbind( DF, "cpue_i"=NA)
-  #for(i in 1:nrow(DF)) DF[i,'cpue_i'] = sum(rlnorm(DF[,'c_i'], meanlog=log(sizepar[1])-sizepar[2]^2/2, sdlog=sizepar[2]))
-  #cpue_mean_i = sizepar[1] * DF[,'c_i']
-  #cpue_CV_i = sizepar[2]/sizepar[1] * DF[,'c_i']^(-0.5)
-  #DF = cbind( DF, "cpue_i"=rgamma(nrow(DF), shape=cpue_CV_i^(-2), scale=cpue_mean_i*cpue_CV_i^2) )      # ~ gamma( shape= CV^(-2), scale=mean*CV^2 )
   DF = cbind( DF, "encounterprob_i"=1-exp(-DF[,'cexp_i']) )
-  DF = cbind( DF, "zinflognorm_i"=ifelse(DF[,'c_i']>0,1,0) * rlnorm(nrow(DF), meanlog=log(DF[,'cexp_i']/DF[,'encounterprob_i']), sdlog=1) )
-  DF = cbind( DF, "zinfgamma_i"=ifelse(DF[,'c_i']>0,1,0) * rgamma(nrow(DF), shape=1^(-2), scale=DF[,'cexp_i']/DF[,'encounterprob_i']*1^2) )
+  logSD_obs = sqrt( log(CV_obs^2+1) )
+  DF = cbind( DF, "zinflognorm_i"=ifelse(DF[,'c_i']>0,1,0) * rlnorm(nrow(DF), meanlog=log(DF[,'cexp_i']/DF[,'encounterprob_i']), sdlog=logSD_obs) )
+  DF = cbind( DF, "zinfgamma_i"=ifelse(DF[,'c_i']>0,1,0) * rgamma(nrow(DF), shape=CV_obs^(-2), scale=DF[,'cexp_i']/DF[,'encounterprob_i']*CV_obs^2) )
 
   # Total catches
   catch_t = colSums( catch_rt )
 
   # Return stuff
-  SettingsList = list( MoveMat=MoveMat, SD_omega=SD_omega, SD_epsilon=SD_epsilon, SD_effort=SD_effort, effort_par=effort_par, sizepar=sizepar, Scale=Scale, Dynamical_Model=Dynamical_Model, n_s=n_s, n_t=n_t, r_s=r_s, n_r=n_r, loc_r=loc_r, logmeanu0=logmeanu0, alpha=alpha, beta=beta, km2_r=km2_r )
+  SettingsList = list( MoveMat=MoveMat, SD_omega=SD_omega, SD_epsilon=SD_epsilon, SD_effort=SD_effort, CV_obs=CV_obs, effort_par=effort_par, sizepar=sizepar, Scale=Scale, Dynamical_Model=Dynamical_Model, n_s=n_s, n_t=n_t, r_s=r_s, n_r=n_r, loc_r=loc_r, logmeanu0=logmeanu0, alpha=alpha, beta=beta, km2_r=km2_r )
   Return = list("SettingsList"=SettingsList, "DF"=DF, "catch_t"=catch_t, "catch_rt"=catch_rt, "effortdens_rt"=effortdens_rt, "MoveMat"=MoveMat, "upred_rt"=upred_rt, "u_rt"=u_rt, "Epsilon_rt"=Epsilon_rt, "Omega_r"=Omega_r)
   return( Return )
 }
