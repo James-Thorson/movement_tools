@@ -17,14 +17,21 @@ SpatProdSimulator_Fn = function( MoveMat, SD_omega=1, SD_epsilon=1, SD_effort=1,
   # Simulate density for each triangle
   # Gompertz: u(t+1) = u(t) * exp( alpha - beta*log(u(t)) )
   # Moran-Ricker: u(t+1) = u(t) * exp( alpha - beta*u(t) )
-  catch_rt = upred_rt = u_rt = Epsilon_rt = matrix(NA, ncol=n_t, nrow=n_r)
+  catch_rt = upred_rt = u_rt = Epsilon_rt = matrix(NA, ncol=n_t+n_years_burnin, nrow=n_r)
   Omega_r = RFsimulate(model=RF_omega, x=loc_r[,1], y=loc_r[,2])@data[,1]
   for(t in 1:n_t){
     Epsilon_rt[,t] = RFsimulate(model=RF_epsilon, x=loc_r[,1], y=loc_r[,2])@data[,1]
     if(t==1){
-      u_rt[,t] = km2_r * exp( logmeanu0 + Omega_r + Epsilon_rt[,t] )
+      # Approximate stationary density
+      if( Dynamical_Model=="Gompertz" ) u_rt[,t] = km2_r * exp( logmeanu0 + Omega_r )
+      if( Dynamical_Model=="Ricker" ) u_rt[,t] = km2_r * exp( logmeanu0 ) + Omega_r 
+      # Fishing mortality and catch
       catch_rt[,t] = (1 - exp(-effortdens_rt[,t]) ) * u_rt[,t]
       u_rt[,t] = exp(-effortdens_rt[,t]) * u_rt[,t] 
+      # Movement
+      u_rt[,t] = as.vector( MoveMat %*% u_rt[,t] )
+      # Process error
+      u_rt[,t] = u_rt[,t] * exp( Epsilon_rt[,t] )
     }
     if(t>=2){
       # Fishing effort
