@@ -1,5 +1,5 @@
 
-Make_Movement_Mesh <- function( loc_orig, MeshType="Samples", ... ){
+Make_Movement_Mesh <- function( loc_orig, MeshType="Samples", Cutoff=1e-12, Refine=FALSE, ... ){
   # 1st mesh
     # for determining locations to track as vertices, and then discarded
   mesh_discard = inla.mesh.create( loc_orig, plot.delay=NULL, extend=list(n=8,offset=-0.15), refine=FALSE )  # loc_samp
@@ -7,7 +7,7 @@ Make_Movement_Mesh <- function( loc_orig, MeshType="Samples", ... ){
 
   # 2nd mesh
     # for generating triangles to track movement                                                           #
-  mesh_domain = inla.mesh.create( loc_discard, plot.delay=NULL, extend=list(n=8,offset=-0.15), refine=FALSE, ... )  # loc_samp
+  mesh_domain = inla.mesh.create( loc_discard, plot.delay=NULL, extend=list(n=8,offset=-0.15), refine=Refine, cutoff=Cutoff, ... )  # loc_samp
   loc_v = mesh_domain$loc[,1:2]
   loc_r = mesh_centers( mesh_domain )
 
