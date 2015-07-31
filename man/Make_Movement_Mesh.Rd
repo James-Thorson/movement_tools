@@ -2,7 +2,7 @@
 \alias{Make_Movement_Mesh}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Make a triangulated mesh for the domain of a population, to account for movement among triangles
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
