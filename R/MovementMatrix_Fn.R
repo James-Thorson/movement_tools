@@ -1,7 +1,7 @@
 MovementMatrix_Fn <-
 function( mesh, TriList){
-  M1 = M2 = M3 = M4 = matrix(0, ncol=n_r, nrow=n_r)
-  for( i in 1:n_r ){
+  M1 = M2 = M3 = M4 = matrix(0, ncol=length(TriList$Tri_Area), nrow=length(TriList$Tri_Area))
+  for( i in 1:length(TriList$Tri_Area) ){
     #plot( rbind(V0[i,],V1[i,],V2[i,]), xlim=c(0,1), ylim=c(0,1) )
     #text( rbind(V0[i,],V1[i,],V2[i,]), labels=0:2)
     # Movement across three edges in each of 4 cardinal directions
